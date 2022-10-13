@@ -24,7 +24,6 @@ const Profile = () => {
       <form // TODO onSubmit
         className='profile__form'
         name='profile'
-        noValidate
       >
         <div className='profile__labels-container'>
           <label className='profile__label'>

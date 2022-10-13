@@ -184,6 +184,7 @@
 @media screen and (max-width: 420px) {
   .navigation__list {
     gap: 14px;
+    padding: 0;
   }
 
   .navigation__link.navigation__link_landing {

@@ -28,7 +28,6 @@ const Login = () => {
       <form
         className='login__form'
         name='login'
-        noValidate
         // onSubmit={} TODO
       >
         <div className='login__labels-container'>

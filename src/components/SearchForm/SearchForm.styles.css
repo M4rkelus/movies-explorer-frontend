@@ -40,6 +40,10 @@
   padding: 3px 19px 3px 61px;
 }
 
+.search__container:focus-within {
+  box-shadow: 0 0 10px var(--color-back-main);
+}
+
 .search__input {
   outline: none;
   border: none;

@@ -28,7 +28,6 @@ const Register = () => {
       <form
         className='register__form'
         name='register'
-        noValidate
         // onSubmit={} TODO
       >
         <div className='register__labels-container'>

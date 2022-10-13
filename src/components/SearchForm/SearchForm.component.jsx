@@ -20,7 +20,6 @@ const SearchForm = () => {
         <form
           className='search__form'
           name='search'
-          noValidate
           // onSubmit={} TODO
         >
           <input
