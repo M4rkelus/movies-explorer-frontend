@@ -1,0 +1,15 @@
+.App {
+  background-color: var(--color-back-primary);
+  font-family: var(--font-main);
+  color: var(--color-font-main);
+  text-rendering: optimizeLegibility;
+}
+
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  min-width: 320px;
+}

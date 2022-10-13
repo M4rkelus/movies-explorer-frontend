@@ -1,0 +1,19 @@
+:root {
+  --color-back-primary: #202020;
+  --color-back-landing: #073042;
+  --color-back-landing-4: #272727;
+  --color-back-landing-5: #303030;
+  --color-back-special-1: #313131;
+  --color-back-special-2: #2f2f2f;
+  --color-back-main: #3ddc84;
+  --color-back-w-shadow: #222222;
+  --color-stroke-landing: #dadada;
+  --color-stroke-2: #424242;
+  --color-stroke-3: #505050;
+  --color-font-main: #ffffff;
+  --color-font-main-2: #4285f4;
+  --color-font-main-3: #ee3465;
+  --color-font-2: #8b8b8b;
+  --color-font-landing-button: #000000;
+  --font-main: 'Inter', 'Tahoma', sans-serif;
+}

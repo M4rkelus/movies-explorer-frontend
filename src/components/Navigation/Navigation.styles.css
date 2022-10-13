@@ -1,0 +1,225 @@
+.navigation {
+  z-index: 3;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navigation__list {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.navigation__list_logged {
+  gap: 20px;
+}
+
+.navigation__link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.29;
+  font-weight: 400;
+  color: var(--color-font-main);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navigation__link:hover {
+  text-shadow: 0 0 10px var(--color-back-main);
+}
+
+.navigation__link_active {
+  font-weight: 500;
+}
+
+.navigation__link.navigation__link_landing {
+  font-size: 12px;
+  line-height: 1.33;
+  font-weight: 500;
+}
+
+.navigation__link_signin {
+  border-radius: 3px;
+  background-color: var(--color-back-main);
+  padding: 8px 20px;
+  color: var(--color-font-landing-button);
+}
+
+.navigation__link_signin:hover {
+  box-shadow: 0px 0px 10px var(--color-back-main);
+}
+
+.navigation__link_type_account {
+  position: relative;
+  border-radius: 40px;
+  margin-left: 24px;
+  min-height: 30px;
+  padding-right: 34px;
+  padding-left: 15px;
+  font-size: 14px;
+  line-height: 1.14;
+  font-weight: 500;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.08);
+}
+
+.navigation__link_type_account:hover {
+  box-shadow: 0px 0px 10px var(--color-back-main);
+}
+
+.navigation__link_type_account::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  content: '';
+  border-radius: 50px;
+  background: no-repeat url('../../images/profile-default-icon.svg') center
+    var(--color-back-special-1);
+  height: 100%;
+  width: 30px;
+}
+
+.navigation__accordion-button {
+  display: none;
+  border: none;
+  height: 35px;
+  width: 35px;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navigation__accordion-button_close {
+  height: 19px;
+  width: 19px;
+}
+
+@media screen and (max-width: 769px) {
+  .navigation_state_open {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .navigation__list_logged {
+    flex-direction: column;
+    gap: 28px;
+    box-sizing: border-box;
+    padding: 160px 90px 90px;
+  }
+
+  .navigation__list_state_open {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    visibility: visible;
+    opacity: 1;
+    background-color: var(--color-back-primary);
+    width: 68%;
+    transition: width 0.2s ease;
+  }
+
+  .navigation__list_state_close {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    visibility: hidden;
+    opacity: 0;
+    background-color: var(--color-back-primary);
+    width: 0;
+    transition: width 0.2s ease;
+  }
+
+  .navigation__item:last-of-type {
+    margin: auto 0 0 0;
+  }
+
+  .navigation__link {
+    white-space: nowrap;
+    font-size: 18px;
+    line-height: 1.22;
+    font-weight: 500;
+  }
+
+  .navigation__link_type_account {
+    margin: 0;
+    font-size: 13px;
+    line-height: 12px;
+    font-weight: 500;
+  }
+
+  .navigation__link_active:not(.navigation__link_type_account) {
+    border-bottom: 2px solid var(--color-font-main);
+  }
+
+  .navigation__accordion-button {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    display: block;
+    background: no-repeat url(../../images/accordion-button.svg) center
+      center/43px 43px;
+  }
+
+  .navigation__accordion-button_close {
+    position: absolute;
+    top: 28px;
+    right: 29px;
+    background: no-repeat url(../../images/close-button.svg) center center/32px
+      32px;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .navigation__list {
+    gap: 14px;
+    padding: 0;
+  }
+
+  .navigation__link.navigation__link_landing {
+    font-size: 10px;
+    line-height: 1.6;
+  }
+
+  .navigation__link_signin {
+    padding: 5px 12px;
+  }
+
+  .navigation__list_logged {
+    gap: 24px;
+    width: 100%;
+  }
+
+  .navigation__item:first-child {
+    margin-top: 144px;
+  }
+
+  .navigation__item:last-child {
+    margin-bottom: 46px;
+  }
+
+  .navigation__accordion-button {
+    background-size: 34px 40px;
+    height: 34px;
+    width: 31px;
+  }
+
+  .navigation__accordion-button_close {
+    top: 18px;
+    right: 18px;
+    background-size: 32px 32px;
+    height: 22px;
+    width: 22px;
+  }
+}
