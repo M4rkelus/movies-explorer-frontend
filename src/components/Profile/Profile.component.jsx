@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import './Profile.styles.css';
 
-const Profile = () => {
+const Profile = ({ onSignOut }) => {
   const [values, setValues] = useState({});
   const currentUser = useContext(CurrentUserContext);
 
@@ -20,7 +20,7 @@ const Profile = () => {
 
   return (
     <main className='profile'>
-      <h1 className='profile__title'>{`Привет, ${currentUser.name ?? ''}!`}</h1>
+      <h1 className='profile__title'>{`Привет, ${values.name ?? ''}!`}</h1>
       <form // TODO onSubmit
         className='profile__form'
         name='profile'
@@ -65,6 +65,7 @@ const Profile = () => {
         <button // TODO onClick
           type='submit'
           className='profile__button-exit'
+          onClick={onSignOut}
         >
           Выйти из аккаунта
         </button>

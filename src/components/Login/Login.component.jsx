@@ -5,7 +5,7 @@ import logo from '../../images/logo.svg';
 
 import './Login.styles.css';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [isValid, setIsValid] = useState(true); // TODO validation
   const [values, setValues] = useState({});
 
@@ -17,6 +17,11 @@ const Login = () => {
     }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onLogin(values.email, values.password);
+  };
+
   return (
     <main className='login'>
       <div className='login__top'>
@@ -26,9 +31,10 @@ const Login = () => {
         <h1 className='login__title'>Рады видеть!</h1>
       </div>
       <form
+        id='login'
         className='login__form'
         name='login'
-        // onSubmit={} TODO
+        onSubmit={handleSubmit}
       >
         <div className='login__labels-container'>
           <label className='login__label'>
@@ -58,7 +64,12 @@ const Login = () => {
         </div>
       </form>
       <div className='login__bottom'>
-        <button type='submit' className='login__button' disabled={!isValid}>
+        <button
+          type='submit'
+          form='login'
+          className='login__button'
+          disabled={!isValid}
+        >
           Войти
         </button>
         <span className='login__assist'>

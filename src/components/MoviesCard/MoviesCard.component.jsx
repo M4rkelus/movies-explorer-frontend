@@ -1,23 +1,12 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { toHoursAndMinutes } from '../../utils/utilities';
 
 import './MoviesCard.styles.css';
 
 const MoviesCard = ({ movie }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const currentLocation = useLocation();
-
-  // Temp TODO move to utils file
-  const toHoursAndMinutes = (totalMinutes) => {
-    const minutes = totalMinutes % 60;
-    const hours = Math.floor(totalMinutes / 60);
-
-    if (hours === 0) return `${padTo2Digits(minutes)}м`;
-    if (minutes === 0) return `${hours}ч`;
-
-    return `${hours}ч ${padTo2Digits(minutes)}м`;
-  };
-  const padTo2Digits = (num) => num.toString().padStart(2, '0');
 
   const handleBookmarkClick = () => setIsBookmarked(!isBookmarked);
   const handleDeleteClick = () => setIsBookmarked(false);
