@@ -19,27 +19,22 @@ import NotFound from '../NotFound/NotFound.component';
 import ProtectedRoutes from '../ProtectedRoutes/ProtectedRoutes.component';
 
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-import { filterMoviesSearch, filterShortMovies } from '../../utils/utilities';
 
 import mainApi from '../../utils/MainApi';
-import moviesApi from '../../utils/MoviesApi';
 
 import './App.styles.css';
 
 const App = () => {
-  const [isLoaded, setIsLoaded] = useState(true); // TODO false
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // TODO false
-  const [isAccordionOpen, setIsAccordionOpen] = useState(false);
-  const [isShortMovies, setIsShortMovies] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Auth state
+  const [isAccordionOpen, setIsAccordionOpen] = useState(false); // Navbar menu button state
 
-  const [currentUser, setCurrentUser] = useState({});
+  const [userMovieList, setUserMovieList] = useState([]); // Movies saved by user
+  const [updatedUserMovieList, setUpdatedUserMovieList] = useState([]); // For trigger RErender component after remove bookmark
 
-  const [movieList, setMovieList] = useState([]);
-  const [userMovieList, setUserMovieList] = useState([]);
-  const [filtredMovieList, setFiltredMovieList] = useState([]);
+  const [currentUser, setCurrentUser] = useState({}); // User data state
 
-  const headerRoutesArr = ['/', '/movies', '/saved-movies', '/profile'];
-  const footerRoutesArr = ['/', '/movies', '/saved-movies'];
+  const headerRoutesArr = ['/', '/movies', '/saved-movies', '/profile']; // Path routes for header view
+  const footerRoutesArr = ['/', '/movies', '/saved-movies']; // Path routes for footer view
 
   const navigate = useNavigate();
   const currentLocation = useLocation();
@@ -77,51 +72,41 @@ const App = () => {
     navigate('/signin');
   };
 
-  const handleSearchSubmit = (inputValue) => {
-    if (movieList.length === 0) {
-      setIsLoaded(false);
-      moviesApi
-        .getMovies()
-        .then((movies) => {
-          const filtredMoviesArr = filterMoviesSearch(
-            movieList,
-            inputValue,
-            isShortMovies
-          );
-          setMovieList(movies);
-          setFiltredMovieList(filtredMoviesArr);
-          localStorage.setItem(
-            `${currentUser.email} - movies`,
-            JSON.stringify(filtredMoviesArr)
-          );
-        })
-        .catch((err) => console.log(err))
-        .finally(setIsLoaded(true));
-    } else {
-      filterMoviesSearch(movieList, inputValue, isShortMovies);
-    }
+  const handleBookmarkMovie = (movie) => {
+    const isSavedMovie = userMovieList.some(
+      (userMovie) => userMovie.movieId === movie.movieId
+    );
+
+    isSavedMovie
+      ? handleDeleteMovie(movie)
+      : mainApi
+          .addMovie(movie)
+          .then((newMovie) => setUserMovieList([...userMovieList, newMovie]))
+          .catch((err) => console.log(err)); // TODO
   };
 
-  useEffect(() => {
-    console.log('из юз эффекта', movieList);
-    console.log('filtredList из юз эффекта', filtredMovieList);
-  }, [movieList, filtredMovieList]);
-
-  // Set state of 'short movies checkbox' and put it in local storage
-  const handleShortMoviesCheckbox = () => {
-    setIsShortMovies(!isShortMovies);
-    !isShortMovies
-      ? setFiltredMovieList(filterShortMovies(movieList))
-      : setFiltredMovieList(movieList);
-    localStorage.setItem(
-      `${currentUser.email} - isShortMovies`,
-      !isShortMovies
+  const handleDeleteMovie = (movie) => {
+    const savedUserMovie = userMovieList.find(
+      (userMovie) =>
+        userMovie.movieId === movie.id || userMovie.movieId === movie.movieId
     );
+    mainApi.deleteMovie(savedUserMovie._id).then(() => {
+      const newUserMovieList = userMovieList.filter(
+        (userMovie) => userMovie.movieId !== movie.movieId
+      );
+
+      setUserMovieList(newUserMovieList);
+      setUpdatedUserMovieList(userMovieList);
+      localStorage.setItem(
+        `${currentUser.email} - userMovies`,
+        JSON.stringify(newUserMovieList)
+      );
+    });
   };
 
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
-    if (jwt) {
+    if (jwt)
       mainApi
         .checkToken(jwt)
         .then((res) => {
@@ -130,35 +115,25 @@ const App = () => {
           navigate('/movies');
         })
         .catch((err) => console.error(`Токен не соответствует: (${err})`));
-    }
   }, []);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn)
       mainApi
         .getUserData()
         .then((user) => setCurrentUser(user.data))
         .catch((err) => console.error(`Что-то пошло не так: (${err})`));
-    }
   }, [isLoggedIn]);
 
   useEffect(() => {
-    if (isLoggedIn && currentUser) {
+    if (isLoggedIn && currentUser)
       mainApi
         .getUserMovies()
         .then((movies) => {
           setUserMovieList(movies.filter((m) => m.owner === currentUser._id));
         })
         .catch((err) => console.error(`Что-то пошло не так: (${err})`));
-    }
-  }, [isLoggedIn, currentUser]);
-
-  // Check 'short movies checkbox' state in local storage
-  useEffect(() => {
-    localStorage.getItem(`${currentUser.email} - isShortMovies`) === 'true'
-      ? setIsShortMovies(true)
-      : setIsShortMovies(false);
-  }, [currentUser]);
+  }, [isLoggedIn, currentUser, updatedUserMovieList]);
 
   return (
     <div className='App'>
@@ -177,11 +152,9 @@ const App = () => {
                 path='/movies'
                 element={
                   <Movies
-                    movieList={movieList}
-                    isLoaded={isLoaded}
-                    isShortMovies={isShortMovies}
-                    onSearch={handleSearchSubmit}
-                    onFilterCheckbox={handleShortMoviesCheckbox}
+                    userMovieList={userMovieList}
+                    onBookmark={handleBookmarkMovie}
+                    onDelete={handleDeleteMovie}
                   />
                 }
               />
@@ -189,11 +162,8 @@ const App = () => {
                 path='/saved-movies'
                 element={
                   <SavedMovies
-                    movies={userMovieList}
-                    isLoaded={isLoaded}
-                    isShortMovies={isShortMovies}
-                    onSearch={handleSearchSubmit}
-                    onFilterCheckbox={handleShortMoviesCheckbox}
+                    userMovieList={userMovieList}
+                    onDelete={handleDeleteMovie}
                   />
                 }
               />

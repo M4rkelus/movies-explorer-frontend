@@ -18,7 +18,7 @@ export const padTo2Digits = (num) => num.toString().padStart(2, '0');
 export const filterShortMovies = (moviesArr) => moviesArr.filter((movie) => movie.duration <= SHORT_MOVIE_DURATION);
 
 // Filter movies by user search
-export const filterMoviesSearch = (moviesArr, searchQuery, isShortMovies) => {
+export const filterMoviesSearch = (moviesArr, searchQuery, isShortMoviesCheckbox) => {
   const filtredMoviesArr = moviesArr.filter((movie) => {
     return String(movie.nameRU)
       .toLowerCase()
@@ -30,5 +30,16 @@ export const filterMoviesSearch = (moviesArr, searchQuery, isShortMovies) => {
         .indexOf(searchQuery.toLowerCase().trim()) !== -1
   });
 
-  return isShortMovies ? filterShortMovies(filtredMoviesArr) : filtredMoviesArr;
+  return isShortMoviesCheckbox ? filterShortMovies(filtredMoviesArr) : filtredMoviesArr;
+}
+
+// Match bookmarked movies with cards
+export const findBookmarkedMovies = (userMoviesArr, movie) => userMoviesArr.find((item) => item.movieId === movie.id);
+
+export const moviesImageLinkTransform = (moviesArr) => {
+  moviesArr.forEach(movie => {
+    movie.thumbnail = `https://api.nomoreparties.co${movie.image.formats.thumbnail.url}`;
+    movie.image = `https://api.nomoreparties.co${movie.image.url}`;
+  })
+  return moviesArr;
 }

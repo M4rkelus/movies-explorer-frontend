@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toHoursAndMinutes } from '../../utils/utilities';
 
 import './MoviesCard.styles.css';
 
-const MoviesCard = ({ movie }) => {
-  const [isBookmarked, setIsBookmarked] = useState(false);
+const MoviesCard = ({ movie, isBookmarked, onBookmark, onDelete }) => {
   const currentLocation = useLocation();
 
-  const handleBookmarkClick = () => setIsBookmarked(!isBookmarked);
-  const handleDeleteClick = () => setIsBookmarked(false);
+  const handleBookmarkClick = () => onBookmark(movie);
+  const handleDeleteClick = () => onDelete(movie);
 
   return (
     <li className='movies-card'>
@@ -50,7 +48,7 @@ const MoviesCard = ({ movie }) => {
         >
           <img
             className='movies-card__poster'
-            src={`https://api.nomoreparties.co${movie.image.url}`} // TODO fix url
+            src={movie.image}
             alt={movie.nameRU}
           />
         </a>

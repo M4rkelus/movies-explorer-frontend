@@ -1,0 +1,13 @@
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1280px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 70px 70px 80px;
+}
+
+.error__message {
+  
+}
