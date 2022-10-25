@@ -1,29 +1,30 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+import { useFormWithValidation } from '../../hooks/useFormWithValidation';
 import './Profile.styles.css';
 
-const Profile = ({ onSignOut }) => {
-  const [values, setValues] = useState({});
+const Profile = ({ onSignOut, onSubmit }) => {
   const currentUser = useContext(CurrentUserContext);
+  const { values, handleChange, resetForm, errors, isValid } =
+    useFormWithValidation();
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(values);
   };
 
   useEffect(() => {
-    setValues({ name: currentUser.name, email: currentUser.email });
-  }, [currentUser]);
+    if (currentUser) resetForm(currentUser, {}, true);
+  }, [currentUser, resetForm]);
 
   return (
     <main className='profile'>
-      <h1 className='profile__title'>{`Привет, ${values.name ?? ''}!`}</h1>
-      <form // TODO onSubmit
+      <h1 className='profile__title'>{`Привет, ${currentUser.name ?? ''}!`}</h1>
+      <form
+        id='submit'
         className='profile__form'
         name='profile'
+        onSubmit={handleSubmit}
       >
         <div className='profile__labels-container'>
           <label className='profile__label'>
@@ -34,12 +35,13 @@ const Profile = ({ onSignOut }) => {
               type='text'
               value={values.name ?? ''}
               required
+              minLength='2'
+              maxLength='30'
               onChange={handleChange}
             />
           </label>
-          {/* TODO Errors */}
           <span className='profile__input-error profile__input-error_name'>
-            Тут будет текст ошибки Имени
+            {errors.name ?? ''}
           </span>
           <label className='profile__label'>
             <span className='profile__label-text'>E-mail</span>
@@ -52,18 +54,22 @@ const Profile = ({ onSignOut }) => {
               onChange={handleChange}
             />
           </label>
-          {/* TODO Errors */}
           <span className='profile__input-error profile__input-error_email'>
-            Тут будет текст ошибки Email
+            {errors.email ?? ''}
           </span>
         </div>
       </form>
       <div className='profile__buttons-container'>
-        <button type='submit' className='profile__button-edit'>
+        <button
+          form='submit'
+          type='submit'
+          className='profile__button-edit'
+          disabled={!isValid}
+        >
           Редактировать
         </button>
-        <button // TODO onClick
-          type='submit'
+        <button
+          type='button'
           className='profile__button-exit'
           onClick={onSignOut}
         >

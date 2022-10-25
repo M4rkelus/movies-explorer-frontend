@@ -1,31 +1,28 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useFormWithValidation } from '../../hooks/useFormWithValidation';
 
 import logo from '../../images/logo.svg';
 
 import './Login.styles.css';
 
 const Login = ({ onLogin }) => {
-  const [isValid, setIsValid] = useState(true); // TODO validation
-  const [values, setValues] = useState({});
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const { values, handleChange, resetForm, errors, isValid } =
+    useFormWithValidation();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onLogin(values.email, values.password);
+    onLogin(values);
   };
+
+  useEffect(() => {
+    resetForm();
+  }, [resetForm]);
 
   return (
     <main className='login'>
       <div className='login__top'>
-        <Link to='/' className='login__link'>
+        <Link to='/' className='login__logo-link'>
           <img src={logo} alt='Логотип' className='login__logo' />
         </Link>
         <h1 className='login__title'>Рады видеть!</h1>
@@ -43,11 +40,11 @@ const Login = ({ onLogin }) => {
               name='email'
               className='login__input'
               onChange={handleChange}
-              value={values.email || ''}
+              value={values.email ?? ''}
               type='email'
               required
             />
-            <span className='login__error'></span>
+            <span className='login__error'>{errors.email ?? ''}</span>
           </label>
           <label className='login__label'>
             <span className='login__label-text'>Пароль</span>
@@ -55,11 +52,11 @@ const Login = ({ onLogin }) => {
               name='password'
               className='login__input'
               onChange={handleChange}
-              value={values.password || ''}
+              value={values.password ?? ''}
               type='password'
               required
             />
-            <span className='login__error'></span>
+            <span className='login__error'>{errors.password ?? ''}</span>
           </label>
         </div>
       </form>

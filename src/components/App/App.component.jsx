@@ -29,8 +29,6 @@ const App = () => {
   const [isAccordionOpen, setIsAccordionOpen] = useState(false); // Navbar menu button state
 
   const [userMovieList, setUserMovieList] = useState([]); // Movies saved by user
-  const [updatedUserMovieList, setUpdatedUserMovieList] = useState([]); // For trigger RErender component after remove bookmark
-
   const [currentUser, setCurrentUser] = useState({}); // User data state
 
   const headerRoutesArr = ['/', '/movies', '/saved-movies', '/profile']; // Path routes for header view
@@ -44,7 +42,7 @@ const App = () => {
   const handleElementRouteCheck = (routesArr) =>
     routesArr.some((route) => route === currentLocation.pathname);
 
-  const handleRegisterSubmit = (name, email, password) =>
+  const handleRegisterSubmit = ({ name, email, password }) =>
     mainApi
       .register(name, email, password)
       .then(() => {
@@ -54,7 +52,7 @@ const App = () => {
         console.error(`Некорректно заполнено одно из полей: (${err})`);
       });
 
-  const handleLoginSubmit = (email, password) =>
+  const handleLoginSubmit = ({ email, password }) => {
     mainApi
       .login(email, password)
       .then((res) => {
@@ -63,13 +61,22 @@ const App = () => {
         navigate('/movies');
       })
       .catch((err) => {
-        console.error(`Пользователь с email не найден : (${err})`);
+        console.error(`Пользователь с таким email не найден : (${err})`);
       });
+  };
 
   const handleSignOut = () => {
     localStorage.removeItem('jwt');
+    setCurrentUser({});
     setIsLoggedIn(false);
     navigate('/signin');
+  };
+
+  const handleProfileEdit = ({ name, email }) => {
+    mainApi
+      .patchUser(name, email)
+      .then((data) => setCurrentUser(data))
+      .catch((err) => console.log(err));
   };
 
   const handleBookmarkMovie = (movie) => {
@@ -77,12 +84,11 @@ const App = () => {
       (userMovie) => userMovie.movieId === movie.movieId
     );
 
-    isSavedMovie
-      ? handleDeleteMovie(movie)
-      : mainApi
-          .addMovie(movie)
-          .then((newMovie) => setUserMovieList([...userMovieList, newMovie]))
-          .catch((err) => console.log(err)); // TODO
+    if (!isSavedMovie)
+      mainApi
+        .addMovie(movie)
+        .then((newMovie) => setUserMovieList([...userMovieList, newMovie]))
+        .catch((err) => console.log(err));
   };
 
   const handleDeleteMovie = (movie) => {
@@ -90,18 +96,20 @@ const App = () => {
       (userMovie) =>
         userMovie.movieId === movie.id || userMovie.movieId === movie.movieId
     );
-    mainApi.deleteMovie(savedUserMovie._id).then(() => {
-      const newUserMovieList = userMovieList.filter(
-        (userMovie) => userMovie.movieId !== movie.movieId
-      );
+    mainApi
+      .deleteMovie(savedUserMovie._id)
+      .then(() => {
+        const newUserMovieList = userMovieList.filter(
+          (userMovie) => userMovie.movieId !== movie.movieId
+        );
 
-      setUserMovieList(newUserMovieList);
-      setUpdatedUserMovieList(userMovieList);
-      localStorage.setItem(
-        `${currentUser.email} - userMovies`,
-        JSON.stringify(newUserMovieList)
-      );
-    });
+        setUserMovieList(newUserMovieList);
+        localStorage.setItem(
+          `${currentUser.email} - userMovies`,
+          JSON.stringify(newUserMovieList)
+        );
+      })
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -133,7 +141,7 @@ const App = () => {
           setUserMovieList(movies.filter((m) => m.owner === currentUser._id));
         })
         .catch((err) => console.error(`Что-то пошло не так: (${err})`));
-  }, [isLoggedIn, currentUser, updatedUserMovieList]);
+  }, [isLoggedIn, currentUser]);
 
   return (
     <div className='App'>
@@ -169,7 +177,12 @@ const App = () => {
               />
               <Route
                 path='/profile'
-                element={<Profile onSignOut={handleSignOut} />}
+                element={
+                  <Profile
+                    onSignOut={handleSignOut}
+                    onSubmit={handleProfileEdit}
+                  />
+                }
               />
             </Route>
             <Route exact path='/' element={<Main />} />

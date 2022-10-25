@@ -15,8 +15,7 @@ class MainApi {
     return fetch(`${this._options.BASE_URL}/signup`, {
       method: "POST",
       headers: this._options.headers,
-      body: JSON.stringify({ name, email, password }),
-      credentials: 'include',
+      body: JSON.stringify({ name, email, password })
     }).then(this._getResponse);
   }
 
@@ -54,6 +53,7 @@ class MainApi {
   // Get user data
   getUserData() {
     return fetch(`${this._options.BASE_URL}/users/me`, {
+      method: 'GET',
       headers: this._options.headers,
       credentials: 'include',
     }).then(this._getResponse);
