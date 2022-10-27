@@ -27,14 +27,17 @@ const MoviesCardList = ({
     const add = filtredMovieList.length - start;
     const newMovies = filtredMovieList?.slice(start, end);
 
-    add > 0 && setMoviesToDisplay([...moviesToDisplay, ...newMovies]);
+    if (add > 0) {
+      setMoviesToDisplay([...moviesToDisplay, ...newMovies]);
+      setCardDisplayOptions({ ...cardDisplayOptions, total: end });
+    }
   };
 
   useEffect(() => {
     setMoviesToDisplay(
       filtredMovieList?.filter((_, index) => index < cardDisplayOptions.total)
     );
-  }, [filtredMovieList, cardDisplayOptions]);
+  }, [filtredMovieList, cardDisplayOptions.total]);
 
   useEffect(() => {
     if (currentLocation.pathname === '/movies') {
@@ -43,7 +46,7 @@ const MoviesCardList = ({
         setCardDisplayOptions(tablet.cards);
       if (widthSize < tablet.minWidth) setCardDisplayOptions(phone.cards);
     }
-  }, [widthSize, currentLocation.pathname]);
+  }, [widthSize, desktop, tablet, phone, currentLocation.pathname]);
 
   return (
     <section className='movies-card-list'>

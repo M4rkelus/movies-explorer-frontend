@@ -9,6 +9,17 @@ export const ERROR_MESSAGES = {
   NOT_FOUND: 'Ничего не найдено',
   EMPTY_INPUT: 'Введите слово для поиска'
 }
+export const TOOLTIP_MESSAGES = {
+  ERROR: {
+    REGISTER_ERROR: 'Некорректно заполнено одно из полей',
+    LOGIN_ERROR: 'Пользователь с таким email не найден',
+    PROFILE_ERROR: 'Что-то пошло не так! Попробуйте ещё раз.',
+  },
+  REGISTER: 'Вы успешно зарегистрировались!',
+  LOGIN: 'Вы успешно авторизировались!',
+  PROFILE: 'Вы успешно обновили свои данные!'
+}
+
 export const DEVICE_SCREEN_SETTINGS = {
   desktop: {
     minWidth: 998,

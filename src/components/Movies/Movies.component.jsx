@@ -65,7 +65,7 @@ const Movies = ({ userMovieList, onBookmark, onDelete }) => {
       moviesApi
         .getMovies()
         .then((movies) => {
-          setLocalMovieList(movies);
+          setMovieList(movies);
           handleFilterMoviesSearch(
             moviesImageLinkTransform(movies),
             inputValue,
@@ -75,7 +75,7 @@ const Movies = ({ userMovieList, onBookmark, onDelete }) => {
         .catch(() =>
           setIsErrorMessage({
             isShown: true,
-            ErrorMessage: ERROR_MESSAGES.NOT_AVAILABLE,
+            message: ERROR_MESSAGES.NOT_AVAILABLE,
           })
         )
         .finally(() => setIsLoading(false));
@@ -109,7 +109,7 @@ const Movies = ({ userMovieList, onBookmark, onDelete }) => {
       const movies = JSON.parse(
         localStorage.getItem(`${currentUser.email} - movies`)
       );
-      setMovieList(movies);
+      setLocalMovieList(movies);
       localStorage.getItem(`${currentUser.email} - isShortMovies`) === 'true'
         ? setFiltredMovieList(filterShortMovies(movies))
         : setFiltredMovieList(movies);
@@ -122,6 +122,7 @@ const Movies = ({ userMovieList, onBookmark, onDelete }) => {
         isShortMovies={isShortMovies}
         onSearch={handleSearchSubmit}
         onFilterCheckbox={handleShortMoviesCheckbox}
+        setIsErrorMessage={setIsErrorMessage}
       />
       {isLoading ? (
         <Preloader />

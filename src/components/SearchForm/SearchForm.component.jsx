@@ -1,17 +1,22 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useFormWithValidation } from '../../hooks/useFormWithValidation';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+import { ERROR_MESSAGES } from '../../utils/constants';
 
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox.component';
 
 import './SearchForm.styles.css';
-import { ERROR_MESSAGES } from '../../utils/constants';
 
-const SearchForm = ({ isShortMovies, onSearch, onFilterCheckbox }) => {
+const SearchForm = ({
+  isShortMovies,
+  onSearch,
+  onFilterCheckbox,
+  setIsErrorMessage,
+}) => {
   const currentUser = useContext(CurrentUserContext);
   const currentLocation = useLocation();
-  const { values, handleChange, errors } = useFormWithValidation();
+  const { values, handleChange, errors, isValid } = useFormWithValidation();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,12 +36,12 @@ const SearchForm = ({ isShortMovies, onSearch, onFilterCheckbox }) => {
   }, [currentUser]);
 
   useEffect(() => {
-    if (
-      !values.search &&
-      !localStorage.getItem(`${currentUser.email} - movieSearch`)
-    )
-      errors.search = ERROR_MESSAGES.EMPTY_INPUT;
-  }, [values]);
+    if (currentLocation.pathname === '/movies' && !values.search)
+      setIsErrorMessage({
+        isShown: true,
+        message: ERROR_MESSAGES.EMPTY_INPUT,
+      });
+  }, [values, currentUser.email, currentLocation.pathname]);
 
   return (
     <section className='search'>
@@ -53,12 +58,16 @@ const SearchForm = ({ isShortMovies, onSearch, onFilterCheckbox }) => {
             type='text'
             placeholder='Фильм'
             autoComplete='off'
-            value={values.search ?? ''}
+            value={values.search || ''}
             onChange={handleChange}
             required
           />
           <span className='search__error'>{errors.search ?? ''}</span>
-          <button className='search__button' type='submit'></button>
+          <button
+            className='search__button'
+            type='submit'
+            disabled={!isValid}
+          ></button>
         </form>
         <FilterCheckbox
           isShortMovies={isShortMovies}

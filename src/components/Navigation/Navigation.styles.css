@@ -34,7 +34,7 @@
   text-shadow: 0 0 10px var(--color-back-main);
 }
 
-.navigation__link:active {
+.navigation__link_active {
   text-shadow: 0 0 10px var(--color-back-main);
 }
 
@@ -164,7 +164,7 @@
     border-bottom: 2px solid var(--color-font-main);
   }
 
-  .navigation__link:active:not(.navigation__link_type_account) {
+  .navigation__link_active:not(.navigation__link_type_account) {
     font-weight: 500;
     border-bottom: 2px solid var(--color-font-main);
   }

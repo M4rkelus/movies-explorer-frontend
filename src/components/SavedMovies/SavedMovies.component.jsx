@@ -45,24 +45,55 @@ const SavedMovies = ({ userMovieList, onDelete }) => {
     setIsLoading(false);
   };
 
-  // Set state of 'short movies checkbox' and put it in local storage
   const handleShortMoviesCheckbox = () => {
-    setIsShortMovies(!isShortMovies);
-    !isShortMovies
-      ? setFiltredMovieList(filterShortMovies(localMovieList))
-      : setFiltredMovieList(localMovieList);
-    localStorage.setItem(
-      `${currentUser.email} - isShortMovies`,
-      !isShortMovies
-    );
+    if (!isShortMovies) {
+      setIsShortMovies(true);
+      setLocalMovieList(filterShortMovies(filtredMovieList));
+      filterShortMovies(filtredMovieList).length === 0
+        ? setIsErrorMessage({
+            isShown: true,
+            message: ERROR_MESSAGES.NOT_FOUND,
+          })
+        : setIsErrorMessage({
+            isShown: false,
+            message: '',
+          });
+      localStorage.setItem(
+        `${currentUser.email} - isShortBookmarkedMovies`,
+        true
+      );
+    } else {
+      setIsShortMovies(false);
+      setLocalMovieList(filtredMovieList);
+      filtredMovieList.length === 0
+        ? setIsErrorMessage({
+            isShown: true,
+            message: ERROR_MESSAGES.NOT_FOUND,
+          })
+        : setIsErrorMessage({
+            isShown: false,
+            message: '',
+          });
+      localStorage.setItem(
+        `${currentUser.email} - isShortBookmarkedMovies`,
+        false
+      );
+    }
   };
 
   // Check 'short movies checkbox' state in local storage
   useEffect(() => {
-    localStorage.getItem(`${currentUser.email} - isShortMovies`) === 'true'
-      ? setIsShortMovies(true)
-      : setIsShortMovies(false);
-  }, [currentUser]);
+    if (
+      localStorage.getItem(`${currentUser.email} - isShortBookmarkedMovies`) ===
+      'true'
+    ) {
+      setIsShortMovies(true);
+      setLocalMovieList(filterShortMovies(userMovieList));
+    } else {
+      setIsShortMovies(false);
+      setLocalMovieList(userMovieList);
+    }
+  }, [currentUser, userMovieList]);
 
   // Get movies from loacalStorage
   useEffect(() => {

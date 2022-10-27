@@ -17,9 +17,10 @@ import Register from '../Register/Register.component';
 import Login from '../Login/Login.component';
 import NotFound from '../NotFound/NotFound.component';
 import ProtectedRoutes from '../ProtectedRoutes/ProtectedRoutes.component';
+import InfoTooltip from '../InfoTooltip/InfoTootip.component';
 
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-
+import { TOOLTIP_MESSAGES } from '../../utils/constants';
 import mainApi from '../../utils/MainApi';
 
 import './App.styles.css';
@@ -27,8 +28,15 @@ import './App.styles.css';
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Auth state
   const [isAccordionOpen, setIsAccordionOpen] = useState(false); // Navbar menu button state
+  const [isInfoTooltip, setInfoTooltip] = useState({
+    isOpen: false,
+    isSucceeded: '',
+    message: '',
+  }); // Info tooltip config state
+  const [isSubmitting, setIsSubmitting] = useState(false); // Forms submitting state
 
   const [userMovieList, setUserMovieList] = useState([]); // Movies saved by user
+  const [updatedUserMovieList, setUpdatedUserMovieList] = useState([]); // Triger render after delete bookmark
   const [currentUser, setCurrentUser] = useState({}); // User data state
 
   const headerRoutesArr = ['/', '/movies', '/saved-movies', '/profile']; // Path routes for header view
@@ -37,6 +45,8 @@ const App = () => {
   const navigate = useNavigate();
   const currentLocation = useLocation();
 
+  const handleInfoTooltipClose = () =>
+    setInfoTooltip({ ...isInfoTooltip, isOpen: false });
   const handleAccordionBtnClick = () => setIsAccordionOpen(!isAccordionOpen);
   const handleNotFoundBtnClick = () => navigate('/');
   const handleElementRouteCheck = (routesArr) =>
@@ -45,50 +55,85 @@ const App = () => {
   const handleRegisterSubmit = ({ name, email, password }) =>
     mainApi
       .register(name, email, password)
-      .then(() => {
-        navigate('/signin');
+      .then((userData) => {
+        if (userData.email) {
+          setInfoTooltip({
+            isOpen: true,
+            isSucceeded: true,
+            message: TOOLTIP_MESSAGES.REGISTER,
+          });
+          handleLoginSubmit({ email, password });
+        }
       })
       .catch((err) => {
+        setInfoTooltip({
+          isOpen: true,
+          isSucceeded: false,
+          message: TOOLTIP_MESSAGES.ERROR.REGISTER_ERROR,
+        });
         console.error(`Некорректно заполнено одно из полей: (${err})`);
       });
 
-  const handleLoginSubmit = ({ email, password }) => {
+  const handleLoginSubmit = ({ email, password }) =>
     mainApi
       .login(email, password)
       .then((res) => {
         localStorage.setItem('jwt', res.token);
         setIsLoggedIn(true);
         navigate('/movies');
+        setInfoTooltip({
+          isOpen: true,
+          isSucceeded: true,
+          message: TOOLTIP_MESSAGES.LOGIN,
+        });
       })
       .catch((err) => {
+        setInfoTooltip({
+          isOpen: true,
+          isSucceeded: false,
+          message: TOOLTIP_MESSAGES.ERROR.LOGIN_ERROR,
+        });
         console.error(`Пользователь с таким email не найден : (${err})`);
       });
-  };
 
   const handleSignOut = () => {
     localStorage.removeItem('jwt');
     setCurrentUser({});
     setIsLoggedIn(false);
-    navigate('/signin');
+    navigate('/');
   };
 
-  const handleProfileEdit = ({ name, email }) => {
+  const handleProfileEdit = ({ name, email }) =>
     mainApi
       .patchUser(name, email)
-      .then((data) => setCurrentUser(data))
-      .catch((err) => console.log(err));
-  };
+      .then((data) => {
+        setCurrentUser(data);
+        setInfoTooltip({
+          isOpen: true,
+          isSucceeded: true,
+          message: TOOLTIP_MESSAGES.PROFILE,
+        });
+      })
+      .catch((err) => {
+        setInfoTooltip({
+          isOpen: true,
+          isSucceeded: false,
+          message: TOOLTIP_MESSAGES.ERROR.PROFILE_ERROR,
+        });
+        console.error(`'Что-то пошло не так! Попробуйте ещё раз.' ${err}`);
+      });
 
   const handleBookmarkMovie = (movie) => {
     const isSavedMovie = userMovieList.some(
       (userMovie) => userMovie.movieId === movie.movieId
     );
 
-    if (!isSavedMovie)
-      mainApi
-        .addMovie(movie)
-        .then((newMovie) => setUserMovieList([...userMovieList, newMovie]))
-        .catch((err) => console.log(err));
+    isSavedMovie
+      ? handleDeleteMovie(movie)
+      : mainApi
+          .addMovie(movie)
+          .then((newMovie) => setUserMovieList([...userMovieList, newMovie]))
+          .catch((err) => console.log(err));
   };
 
   const handleDeleteMovie = (movie) => {
@@ -104,6 +149,7 @@ const App = () => {
         );
 
         setUserMovieList(newUserMovieList);
+        setUpdatedUserMovieList(userMovieList);
         localStorage.setItem(
           `${currentUser.email} - userMovies`,
           JSON.stringify(newUserMovieList)
@@ -120,7 +166,7 @@ const App = () => {
         .then((res) => {
           setIsLoggedIn(true);
           setCurrentUser(res.data);
-          navigate('/movies');
+          navigate(currentLocation.pathname);
         })
         .catch((err) => console.error(`Токен не соответствует: (${err})`));
   }, []);
@@ -138,10 +184,12 @@ const App = () => {
       mainApi
         .getUserMovies()
         .then((movies) => {
-          setUserMovieList(movies.filter((m) => m.owner === currentUser._id));
+          setUserMovieList(
+            movies.filter((movie) => movie.owner === currentUser._id)
+          );
         })
         .catch((err) => console.error(`Что-то пошло не так: (${err})`));
-  }, [isLoggedIn, currentUser]);
+  }, [isLoggedIn, currentUser, updatedUserMovieList]);
 
   return (
     <div className='App'>
@@ -189,7 +237,13 @@ const App = () => {
             <Route
               exact
               path='/signup'
-              element={<Register onRegister={handleRegisterSubmit} />}
+              element={
+                <Register
+                  onRegister={handleRegisterSubmit}
+                  isSubmitting={isSubmitting}
+                  setIsSubmitting={setIsSubmitting}
+                />
+              }
             />
             <Route
               exact
@@ -203,6 +257,10 @@ const App = () => {
             <Route path='*' element={<Navigate to='/404' replace />} />
           </Routes>
           {handleElementRouteCheck(footerRoutesArr) && <Footer />}
+          <InfoTooltip
+            configState={isInfoTooltip}
+            onClose={handleInfoTooltipClose}
+          />
         </CurrentUserContext.Provider>
       </div>
     </div>
