@@ -8,4 +8,4 @@ Backend [https://api.movies-explorer-mrk.nomorepartiesxyz.ru](https://api.movies
 
 Public IP 51.250.26.122
 
-Pullrequest [https://github.com/M4rkelus/movies-explorer-frontend/tree/level-3](https://github.com/M4rkelus/movies-explorer-frontend/tree/level-3)
+Pullrequest [https://github.com/M4rkelus/movies-explorer-frontend/pull/2](https://github.com/M4rkelus/movies-explorer-frontend/pull/2)
