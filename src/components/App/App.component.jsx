@@ -47,8 +47,9 @@ const App = () => {
 
   const handleInfoTooltipClose = () =>
     setInfoTooltip({ ...isInfoTooltip, isOpen: false });
+
   const handleAccordionBtnClick = () => setIsAccordionOpen(!isAccordionOpen);
-  const handleNotFoundBtnClick = () => navigate('/');
+
   const handleElementRouteCheck = (routesArr) =>
     routesArr.some((route) => route === currentLocation.pathname);
 
@@ -235,7 +236,6 @@ const App = () => {
             </Route>
             <Route exact path='/' element={<Main />} />
             <Route
-              exact
               path='/signup'
               element={
                 <Register
@@ -246,14 +246,10 @@ const App = () => {
               }
             />
             <Route
-              exact
               path='/signin'
               element={<Login onLogin={handleLoginSubmit} />}
             />
-            <Route
-              path='/404'
-              element={<NotFound onGoBackBtnClick={handleNotFoundBtnClick} />}
-            />
+            <Route path='/404' element={<NotFound />} />
             <Route path='*' element={<Navigate to='/404' replace />} />
           </Routes>
           {handleElementRouteCheck(footerRoutesArr) && <Footer />}

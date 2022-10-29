@@ -9,7 +9,7 @@ import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import {
   filterMoviesSearch,
   filterShortMovies,
-  moviesImageLinkTransform,
+  transformMoviesData,
 } from '../../utils/utilities';
 import { ERROR_MESSAGES } from '../../utils/constants';
 
@@ -67,7 +67,7 @@ const Movies = ({ userMovieList, onBookmark, onDelete }) => {
         .then((movies) => {
           setMovieList(movies);
           handleFilterMoviesSearch(
-            moviesImageLinkTransform(movies),
+            transformMoviesData(movies),
             inputValue,
             isShortMovies
           );

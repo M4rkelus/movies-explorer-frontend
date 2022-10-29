@@ -13,6 +13,10 @@ const Profile = ({ onSignOut, onSubmit }) => {
     onSubmit(values);
   };
 
+  const isRequiredСondition =
+    !isValid ||
+    (currentUser.name === values.name && currentUser.email === values.email); // Check if name and email are the same
+
   useEffect(() => {
     if (currentUser) resetForm(currentUser, {}, true);
   }, [currentUser, resetForm]);
@@ -64,7 +68,7 @@ const Profile = ({ onSignOut, onSubmit }) => {
           form='submit'
           type='submit'
           className='profile__button-edit'
-          disabled={!isValid}
+          disabled={isRequiredСondition}
         >
           Редактировать
         </button>

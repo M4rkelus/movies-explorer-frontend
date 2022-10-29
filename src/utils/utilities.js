@@ -36,10 +36,20 @@ export const filterMoviesSearch = (moviesArr, searchQuery, isShortMoviesCheckbox
 // Match bookmarked movies with cards
 export const findBookmarkedMovies = (userMoviesArr, movie) => userMoviesArr.find((item) => item.movieId === movie.id);
 
-export const moviesImageLinkTransform = (moviesArr) => {
+// Add missing api movie data and tramsform image links
+export const transformMoviesData = (moviesArr) => {
   moviesArr.forEach(movie => {
-    movie.thumbnail = `https://api.nomoreparties.co${movie.image.formats.thumbnail.url}`;
-    movie.image = `https://api.nomoreparties.co${movie.image.url}`;
+    if (!movie.nameEN) movie.nameEN = movie.nameRU;
+    if (!movie.country) movie.country = 'Russia';
+    if (!movie.trailerLink || !movie.trailerLink.includes('https://www.youtube.com/'))
+      movie.trailerLink = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    if (!movie.image) {
+      movie.image = 'https://s1.hostingkartinok.com/uploads/images/2022/10/f27b6ff74390f86b5c5d4f222436d605.jpg'
+      movie.thumbnail = 'https://s1.hostingkartinok.com/uploads/images/2022/10/f27b6ff74390f86b5c5d4f222436d605.jpg'
+    } else {
+      movie.thumbnail = `https://api.nomoreparties.co${movie.image.formats.thumbnail.url}`;
+      movie.image = `https://api.nomoreparties.co${movie.image.url}`;
+    }
   })
   return moviesArr;
 }
