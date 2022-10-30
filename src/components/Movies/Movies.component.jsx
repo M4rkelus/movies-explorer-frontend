@@ -71,6 +71,10 @@ const Movies = ({ userMovieList, onBookmark, onDelete }) => {
             inputValue,
             isShortMovies
           );
+          localStorage.setItem(
+            `${currentUser.email} - initialMovies`,
+            JSON.stringify(movies)
+          );
         })
         .catch(() =>
           setIsErrorMessage({
@@ -95,6 +99,14 @@ const Movies = ({ userMovieList, onBookmark, onDelete }) => {
       !isShortMovies
     );
   };
+
+  // Set initial movies from API to localeStorage
+  useEffect(() => {
+    const initialMovies = JSON.parse(
+      localStorage.getItem(`${currentUser.email} - initialMovies`)
+    );
+    if (initialMovies) setMovieList(initialMovies);
+  }, []);
 
   // Check 'short movies checkbox' state in local storage
   useEffect(() => {

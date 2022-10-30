@@ -3,19 +3,19 @@ import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useFormWithValidation } from '../../hooks/useFormWithValidation';
 import './Profile.styles.css';
 
-const Profile = ({ onSignOut, onSubmit }) => {
+const Profile = ({ onSignOut, onSubmit, isSubmitting }) => {
   const currentUser = useContext(CurrentUserContext);
   const { values, handleChange, resetForm, errors, isValid } =
     useFormWithValidation();
+
+  const isRequiredСondition =
+    !isValid ||
+    (currentUser.name === values.name && currentUser.email === values.email); // Check if name and email are the same
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(values);
   };
-
-  const isRequiredСondition =
-    !isValid ||
-    (currentUser.name === values.name && currentUser.email === values.email); // Check if name and email are the same
 
   useEffect(() => {
     if (currentUser) resetForm(currentUser, {}, true);
@@ -68,7 +68,7 @@ const Profile = ({ onSignOut, onSubmit }) => {
           form='submit'
           type='submit'
           className='profile__button-edit'
-          disabled={isRequiredСondition}
+          disabled={isRequiredСondition || isSubmitting}
         >
           Редактировать
         </button>

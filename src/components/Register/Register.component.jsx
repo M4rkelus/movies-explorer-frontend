@@ -6,7 +6,7 @@ import logo from '../../images/logo.svg';
 
 import './Register.styles.css';
 
-const Register = ({ onRegister }) => {
+const Register = ({ onRegister, isSubmitting }) => {
   const { values, handleChange, resetForm, errors, isValid } =
     useFormWithValidation();
 
@@ -81,7 +81,7 @@ const Register = ({ onRegister }) => {
           type='submit'
           form='submit'
           className='register__button'
-          disabled={!isValid}
+          disabled={!isValid || isSubmitting}
         >
           Зарегистрироваться
         </button>

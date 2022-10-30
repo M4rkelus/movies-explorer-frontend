@@ -6,7 +6,7 @@ import logo from '../../images/logo.svg';
 
 import './Login.styles.css';
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, isSubmitting }) => {
   const { values, handleChange, resetForm, errors, isValid } =
     useFormWithValidation();
 
@@ -65,7 +65,7 @@ const Login = ({ onLogin }) => {
           type='submit'
           form='login'
           className='login__button'
-          disabled={!isValid}
+          disabled={!isValid || isSubmitting}
         >
           Войти
         </button>

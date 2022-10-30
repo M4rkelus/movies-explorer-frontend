@@ -53,8 +53,9 @@ const App = () => {
   const handleElementRouteCheck = (routesArr) =>
     routesArr.some((route) => route === currentLocation.pathname);
 
-  const handleRegisterSubmit = ({ name, email, password }) =>
-    mainApi
+  const handleRegisterSubmit = async ({ name, email, password }) => {
+    setIsSubmitting(true);
+    await mainApi
       .register(name, email, password)
       .then((userData) => {
         if (userData.email) {
@@ -73,10 +74,13 @@ const App = () => {
           message: TOOLTIP_MESSAGES.ERROR.REGISTER_ERROR,
         });
         console.error(`Некорректно заполнено одно из полей: (${err})`);
-      });
+      })
+      .finally(() => setIsSubmitting(false));
+  };
 
-  const handleLoginSubmit = ({ email, password }) =>
-    mainApi
+  const handleLoginSubmit = async ({ email, password }) => {
+    setIsSubmitting(true);
+    await mainApi
       .login(email, password)
       .then((res) => {
         localStorage.setItem('jwt', res.token);
@@ -95,17 +99,31 @@ const App = () => {
           message: TOOLTIP_MESSAGES.ERROR.LOGIN_ERROR,
         });
         console.error(`Пользователь с таким email не найден : (${err})`);
-      });
-
-  const handleSignOut = () => {
-    localStorage.removeItem('jwt');
-    setCurrentUser({});
-    setIsLoggedIn(false);
-    navigate('/');
+      })
+      .finally(() => setIsSubmitting(false));
   };
 
-  const handleProfileEdit = ({ name, email }) =>
+  const handleSignOut = () =>
     mainApi
+      .logout()
+      .then(() => {
+        localStorage.clear();
+        setCurrentUser({});
+        setIsLoggedIn(false);
+        navigate('/');
+      })
+      .catch((err) => {
+        setInfoTooltip({
+          isOpen: true,
+          isSucceeded: false,
+          message: TOOLTIP_MESSAGES.ERROR.PROFILE_ERROR,
+        });
+        console.error(`'Что-то пошло не так! Попробуйте ещё раз.' ${err}`);
+      });
+
+  const handleProfileEdit = async ({ name, email }) => {
+    setIsSubmitting(true);
+    await mainApi
       .patchUser(name, email)
       .then((data) => {
         setCurrentUser(data);
@@ -122,7 +140,9 @@ const App = () => {
           message: TOOLTIP_MESSAGES.ERROR.PROFILE_ERROR,
         });
         console.error(`'Что-то пошло не так! Попробуйте ещё раз.' ${err}`);
-      });
+      })
+      .finally(() => setIsSubmitting(false));
+  };
 
   const handleBookmarkMovie = (movie) => {
     const isSavedMovie = userMovieList.some(
@@ -161,7 +181,7 @@ const App = () => {
 
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
-    if (jwt)
+    if (jwt) {
       mainApi
         .checkToken(jwt)
         .then((res) => {
@@ -170,7 +190,10 @@ const App = () => {
           navigate(currentLocation.pathname);
         })
         .catch((err) => console.error(`Токен не соответствует: (${err})`));
-  }, []);
+    } else {
+      handleSignOut();
+    }
+  }, [isLoggedIn]);
 
   useEffect(() => {
     if (isLoggedIn)
@@ -230,6 +253,7 @@ const App = () => {
                   <Profile
                     onSignOut={handleSignOut}
                     onSubmit={handleProfileEdit}
+                    isSubmitting={isSubmitting}
                   />
                 }
               />
@@ -238,16 +262,28 @@ const App = () => {
             <Route
               path='/signup'
               element={
-                <Register
-                  onRegister={handleRegisterSubmit}
-                  isSubmitting={isSubmitting}
-                  setIsSubmitting={setIsSubmitting}
-                />
+                isLoggedIn ? (
+                  <Navigate to='/' replace />
+                ) : (
+                  <Register
+                    onRegister={handleRegisterSubmit}
+                    isSubmitting={isSubmitting}
+                  />
+                )
               }
             />
             <Route
               path='/signin'
-              element={<Login onLogin={handleLoginSubmit} />}
+              element={
+                isLoggedIn ? (
+                  <Navigate to='/' replace />
+                ) : (
+                  <Login
+                    onLogin={handleLoginSubmit}
+                    isSubmitting={isSubmitting}
+                  />
+                )
+              }
             />
             <Route path='/404' element={<NotFound />} />
             <Route path='*' element={<Navigate to='/404' replace />} />
