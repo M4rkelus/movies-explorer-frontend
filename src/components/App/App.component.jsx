@@ -45,10 +45,11 @@ const App = () => {
   const navigate = useNavigate();
   const currentLocation = useLocation();
 
+  const handleGoBackClick = () => navigate('/');
+  const handleAccordionBtnClick = () => setIsAccordionOpen(!isAccordionOpen);
+
   const handleInfoTooltipClose = () =>
     setInfoTooltip({ ...isInfoTooltip, isOpen: false });
-
-  const handleAccordionBtnClick = () => setIsAccordionOpen(!isAccordionOpen);
 
   const handleElementRouteCheck = (routesArr) =>
     routesArr.some((route) => route === currentLocation.pathname);
@@ -285,7 +286,10 @@ const App = () => {
                 )
               }
             />
-            <Route path='/404' element={<NotFound />} />
+            <Route
+              path='/404'
+              element={<NotFound onClick={handleGoBackClick} />}
+            />
             <Route path='*' element={<Navigate to='/404' replace />} />
           </Routes>
           {handleElementRouteCheck(footerRoutesArr) && <Footer />}
