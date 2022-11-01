@@ -1,34 +1,37 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useFormWithValidation } from '../../hooks/useFormWithValidation';
 
 import logo from '../../images/logo.svg';
 
 import './Login.styles.css';
 
-const Login = () => {
-  const [isValid, setIsValid] = useState(true); // TODO validation
-  const [values, setValues] = useState({});
+const Login = ({ onLogin, isSubmitting }) => {
+  const { values, handleChange, resetForm, errors, isValid } =
+    useFormWithValidation();
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onLogin(values);
   };
+
+  useEffect(() => {
+    resetForm();
+  }, [resetForm]);
 
   return (
     <main className='login'>
       <div className='login__top'>
-        <Link to='/' className='login__link'>
+        <Link to='/' className='login__logo-link'>
           <img src={logo} alt='Логотип' className='login__logo' />
         </Link>
         <h1 className='login__title'>Рады видеть!</h1>
       </div>
       <form
+        id='login'
         className='login__form'
         name='login'
-        // onSubmit={} TODO
+        onSubmit={handleSubmit}
       >
         <div className='login__labels-container'>
           <label className='login__label'>
@@ -37,11 +40,11 @@ const Login = () => {
               name='email'
               className='login__input'
               onChange={handleChange}
-              value={values.email || ''}
+              value={values.email ?? ''}
               type='email'
               required
             />
-            <span className='login__error'></span>
+            <span className='login__error'>{errors.email ?? ''}</span>
           </label>
           <label className='login__label'>
             <span className='login__label-text'>Пароль</span>
@@ -49,16 +52,21 @@ const Login = () => {
               name='password'
               className='login__input'
               onChange={handleChange}
-              value={values.password || ''}
+              value={values.password ?? ''}
               type='password'
               required
             />
-            <span className='login__error'></span>
+            <span className='login__error'>{errors.password ?? ''}</span>
           </label>
         </div>
       </form>
       <div className='login__bottom'>
-        <button type='submit' className='login__button' disabled={!isValid}>
+        <button
+          type='submit'
+          form='login'
+          className='login__button'
+          disabled={!isValid || isSubmitting}
+        >
           Войти
         </button>
         <span className='login__assist'>

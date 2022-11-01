@@ -88,6 +88,11 @@
   box-shadow: 0 0 10px var(--color-font-main);
 }
 
+.search__button:disabled {
+  box-shadow: none;
+  background-color: var(--color-stroke-3);
+}
+
 .search__form::before {
   position: absolute;
   left: 19px;

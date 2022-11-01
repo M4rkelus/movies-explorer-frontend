@@ -35,7 +35,7 @@
 }
 
 .navigation__link_active {
-  font-weight: 500;
+  text-shadow: 0 0 10px var(--color-back-main);
 }
 
 .navigation__link.navigation__link_landing {
@@ -159,7 +159,13 @@
     font-weight: 500;
   }
 
+  .navigation__link:hover:not(.navigation__link_type_account) {
+    font-weight: 500;
+    border-bottom: 2px solid var(--color-font-main);
+  }
+
   .navigation__link_active:not(.navigation__link_type_account) {
+    font-weight: 500;
     border-bottom: 2px solid var(--color-font-main);
   }
 

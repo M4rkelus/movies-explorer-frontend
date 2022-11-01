@@ -18,25 +18,49 @@ const Navigation = ({ isLoggedIn, isAccordionOpen, onClickAccordion }) => {
           >
             {isAccordionOpen && (
               <li className='navigation__item'>
-                <NavLink to='/' className='navigation__link '>
+                <NavLink
+                  className={({ isActive }) =>
+                    !isActive // TODO Bug with always active 1st NavLink(Router v6), change isActive when they fix it
+                      ? 'navigation__link navigation__link_active'
+                      : 'navigation__link'
+                  }
+                  to='/'
+                >
                   Главная
                 </NavLink>
               </li>
             )}
-            {/* TODO Remove hardcode active class*/}
-            <li className='navigation__item navigation__link_active'>
-              <NavLink className='navigation__link' to='/movies'>
+            <li className='navigation__item'>
+              <NavLink
+                className={({ isActive }) =>
+                  isActive
+                    ? 'navigation__link navigation__link_active'
+                    : 'navigation__link'
+                }
+                to='/movies'
+              >
                 Фильмы
               </NavLink>
             </li>
             <li className='navigation__item'>
-              <NavLink className='navigation__link' to='/saved-movies'>
+              <NavLink
+                className={({ isActive }) =>
+                  isActive
+                    ? 'navigation__link navigation__link_active'
+                    : 'navigation__link'
+                }
+                to='/saved-movies'
+              >
                 Сохранённые фильмы
               </NavLink>
             </li>
             <li className='navigation__item'>
               <NavLink
-                className='navigation__link navigation__link_type_account'
+                className={({ isActive }) =>
+                  isActive
+                    ? 'navigation__link link navigation__link_type_account navigation__link_active'
+                    : 'navigation__link link navigation__link_type_account'
+                }
                 to='/profile'
               >
                 Аккаунт
